@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 5rem auto 2rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #0070f3;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eeeeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: #0070f3;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .menu-structure {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .menu-level {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .menu-level h3 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .menu-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-item.inactive {
+            opacity: 0.6;
+            background-color: #f8f9fa;
+        }
+        
+        .menu-item-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        
+        .menu-item-icon {
+            font-size: 1.2rem;
+            width: 2rem;
+            text-align: center;
+        }
+        
+        .menu-item-details h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            color: #333;
+        }
+        
+        .menu-item-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .menu-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eeeeee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        .icon-preview {
+            display: inline-block;
+            width: 2rem;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #0070f3;
+        }
+        
+        .level-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .level-1 {
+            background-color: #0070f3;
+        }
+        
+        .level-2 {
+            background-color: #28a745;
+        }
+        
+        .level-3 {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- SAP UI5 Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="sap-logo">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>SAP Reports</span>
+                </div>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <% if (user.picture) { %>
+                            <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                        <% } else { %>
+                            <div class="sap-user-avatar" style="background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                        <span style="font-size: 0.9rem;"><%= user.name %></span>
+                    <% } %>
+                </div>
+                <button class="sap-logout-btn" onclick="showLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Dashboard</a> > 
+            <a href="/admin/users">Administración</a> > 
+            Configuración de Menús
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">
+                    <i class="fas fa-bars"></i>
+                    Configuración de Menús
+                </h1>
+                <button class="btn btn-primary" onclick="showCreateModal()">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Elemento
+                </button>
+            </div>
+            <div class="card-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <%= success %>
+                    </div>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+                
+                <% if (info && info.length > 0) { %>
+                    <div class="alert alert-info">
+                        <%= info %>
+                    </div>
+                <% } %>
+
+                <!-- Estructura de menús por niveles -->
+                <div class="menu-structure">
+                    <!-- Nivel 1 -->
+                    <div class="menu-level">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Nivel 1 - Menús Principales
+                            <span class="level-indicator level-1">Padre</span>
+                        </h3>
+                        <% if (menuStructure.level1 && menuStructure.level1.length > 0) { %>
+                            <% menuStructure.level1.forEach(function(item) { %>
+                                <div class="menu-item <%= item.isActive ? '' : 'inactive' %>">
+                                    <div class="menu-item-info">
+                                        <div class="menu-item-icon">
+                                            <i class="<%= item.icon %>"></i>
+                                        </div>
+                                        <div class="menu-item-details">
+                                            <h4><%= item.text %></h4>
+                                            <p>Ruta: <%= item.route %> | Orden: <%= item.order %></p>
+                                        </div>
+                                        <span class="status-badge <%= item.isActive ? 'status-active' : 'status-inactive' %>">
+                                            <%= item.isActive ? 'Activo' : 'Inactivo' %>
+                                        </span>
+                                    </div>
+                                    <div class="menu-item-actions">
+                                        <button class="btn btn-warning" onclick="showEditModal('<%= item.id %>')">
+                                            <i class="fas fa-edit"></i>
+                                            Editar
+                                        </button>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/toggle" style="display: inline;">
+                                            <button type="submit" class="btn <%= item.isActive ? 'btn-secondary' : 'btn-success' %>">
+                                                <i class="fas fa-<%= item.isActive ? 'eye-slash' : 'eye' %>"></i>
+                                                <%= item.isActive ? 'Desactivar' : 'Activar' %>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este elemento?')">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No hay elementos de nivel 1</p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Nivel 2 -->
+                    <div class="menu-level">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Nivel 2 - Submenús
+                            <span class="level-indicator level-2">Hijo</span>
+                        </h3>
+                        <% if (menuStructure.level2 && menuStructure.level2.length > 0) { %>
+                            <% menuStructure.level2.forEach(function(item) { %>
+                                <div class="menu-item <%= item.isActive ? '' : 'inactive' %>">
+                                    <div class="menu-item-info">
+                                        <div class="menu-item-icon">
+                                            <i class="<%= item.icon %>"></i>
+                                        </div>
+                                        <div class="menu-item-details">
+                                            <h4><%= item.text %></h4>
+                                            <p>Ruta: <%= item.route %> | Padre: <%= item.parentId %> | Orden: <%= item.order %></p>
+                                        </div>
+                                        <span class="status-badge <%= item.isActive ? 'status-active' : 'status-inactive' %>">
+                                            <%= item.isActive ? 'Activo' : 'Inactivo' %>
+                                        </span>
+                                    </div>
+                                    <div class="menu-item-actions">
+                                        <button class="btn btn-warning" onclick="showEditModal('<%= item.id %>')">
+                                            <i class="fas fa-edit"></i>
+                                            Editar
+                                        </button>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/toggle" style="display: inline;">
+                                            <button type="submit" class="btn <%= item.isActive ? 'btn-secondary' : 'btn-success' %>">
+                                                <i class="fas fa-<%= item.isActive ? 'eye-slash' : 'eye' %>"></i>
+                                                <%= item.isActive ? 'Desactivar' : 'Activar' %>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este elemento?')">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No hay elementos de nivel 2</p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Nivel 3 -->
+                    <div class="menu-level">
+                        <h3>
+                            <i class="fas fa-layer-group"></i>
+                            Nivel 3 - Sub-submenús
+                            <span class="level-indicator level-3">Nieto</span>
+                        </h3>
+                        <% if (menuStructure.level3 && menuStructure.level3.length > 0) { %>
+                            <% menuStructure.level3.forEach(function(item) { %>
+                                <div class="menu-item <%= item.isActive ? '' : 'inactive' %>">
+                                    <div class="menu-item-info">
+                                        <div class="menu-item-icon">
+                                            <i class="<%= item.icon %>"></i>
+                                        </div>
+                                        <div class="menu-item-details">
+                                            <h4><%= item.text %></h4>
+                                            <p>Ruta: <%= item.route %> | Padre: <%= item.parentId %> | Orden: <%= item.order %></p>
+                                        </div>
+                                        <span class="status-badge <%= item.isActive ? 'status-active' : 'status-inactive' %>">
+                                            <%= item.isActive ? 'Activo' : 'Inactivo' %>
+                                        </span>
+                                    </div>
+                                    <div class="menu-item-actions">
+                                        <button class="btn btn-warning" onclick="showEditModal('<%= item.id %>')">
+                                            <i class="fas fa-edit"></i>
+                                            Editar
+                                        </button>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/toggle" style="display: inline;">
+                                            <button type="submit" class="btn <%= item.isActive ? 'btn-secondary' : 'btn-success' %>">
+                                                <i class="fas fa-<%= item.isActive ? 'eye-slash' : 'eye' %>"></i>
+                                                <%= item.isActive ? 'Desactivar' : 'Activar' %>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/menu-config/<%= item.id %>/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este elemento?')">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No hay elementos de nivel 3</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar elemento -->
+    <div class="modal" id="menuModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Nuevo Elemento de Menú</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="menuForm" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="text" class="form-label">Texto del Menú *</label>
+                        <input type="text" id="text" name="text" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="icon" class="form-label">Icono</label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="text" id="icon" name="icon" class="form-control" placeholder="fas fa-home" value="fas fa-circle">
+                            <div class="icon-preview" id="iconPreview">
+                                <i class="fas fa-circle"></i>
+                            </div>
+                        </div>
+                        <small style="color: #666; font-size: 0.8rem;">
+                            Usa clases de FontAwesome (ej: fas fa-home, fas fa-user, etc.)
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="route" class="form-label">Ruta</label>
+                        <input type="text" id="route" name="route" class="form-control" placeholder="/ruta-del-menu">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="level" class="form-label">Nivel *</label>
+                            <select id="level" name="level" class="form-control" required onchange="updateParentOptions()">
+                                <option value="1">Nivel 1 (Menú Principal)</option>
+                                <option value="2">Nivel 2 (Submenú)</option>
+                                <option value="3">Nivel 3 (Sub-submenú)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="parentId" class="form-label">Menú Padre</label>
+                            <select id="parentId" name="parentId" class="form-control">
+                                <option value="">Seleccionar padre (opcional)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="order" class="form-label">Orden</label>
+                        <input type="number" id="order" name="order" class="form-control" min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group" id="activeGroup" style="display: none;">
+                        <label>
+                            <input type="checkbox" id="isActive" name="isActive" value="true" checked>
+                            Elemento activo
+                        </label>
+                        <!-- Campo oculto para manejar el caso cuando el checkbox no está marcado -->
+                        <input type="hidden" name="isActive" value="false">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Crear Elemento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Cierre de Sesión</h3>
+                <button class="close-btn" onclick="closeLogoutModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres cerrar sesión?</p>
+                <small style="color: #666;">Tendrás que iniciar sesión nuevamente para acceder a los reportes.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeLogoutModal()">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmLogout()">Sí, Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let isEditMode = false;
+        let currentEditId = null;
+        const menuItems = <%- JSON.stringify(menuItems) %>;
+
+        // Funciones del modal principal
+        function showCreateModal() {
+            isEditMode = false;
+            currentEditId = null;
+            
+            document.getElementById('modalTitle').textContent = 'Nuevo Elemento de Menú';
+            document.getElementById('submitBtn').textContent = 'Crear Elemento';
+            document.getElementById('menuForm').action = '/admin/menu-config/create';
+            document.getElementById('activeGroup').style.display = 'none';
+            
+            // Limpiar formulario
+            document.getElementById('menuForm').reset();
+            document.getElementById('icon').value = 'fas fa-circle';
+            updateIconPreview();
+            
+            document.getElementById('menuModal').classList.add('show');
+        }
+
+        function showEditModal(itemId) {
+            // Buscar por id (string) o _id (ObjectId)
+            const item = menuItems.find(i => i.id === itemId || i._id === itemId);
+            if (!item) {
+                console.error('Elemento no encontrado:', itemId);
+                return;
+            }
+
+            isEditMode = true;
+            currentEditId = itemId;
+            
+            document.getElementById('modalTitle').textContent = 'Editar Elemento de Menú';
+            document.getElementById('submitBtn').textContent = 'Actualizar Elemento';
+            document.getElementById('menuForm').action = `/admin/menu-config/${itemId}/update`;
+            document.getElementById('activeGroup').style.display = 'block';
+            
+            // Llenar formulario
+            document.getElementById('text').value = item.text || '';
+            document.getElementById('icon').value = item.icon || 'fas fa-circle';
+            document.getElementById('route').value = item.route || '';
+            document.getElementById('level').value = item.level || 1;
+            document.getElementById('parentId').value = item.parentId || '';
+            document.getElementById('order').value = item.order || 0;
+            document.getElementById('isActive').checked = item.isActive === true; // Marcar solo si es explícitamente true
+            
+            updateIconPreview();
+            
+            // Actualizar opciones de padre después de cambiar el nivel
+            setTimeout(() => {
+                updateParentOptions();
+                // Establecer el padre seleccionado después de cargar las opciones
+                document.getElementById('parentId').value = item.parentId || '';
+            }, 100);
+            
+            document.getElementById('menuModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('menuModal').classList.remove('show');
+        }
+
+        // Funciones del modal de logout
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+
+        // Funciones auxiliares
+        function updateIconPreview() {
+            const iconInput = document.getElementById('icon');
+            const preview = document.getElementById('iconPreview');
+            const iconClass = iconInput.value || 'fas fa-circle';
+            preview.innerHTML = `<i class="${iconClass}"></i>`;
+        }
+
+        function updateParentOptions() {
+            const levelSelect = document.getElementById('level');
+            const parentSelect = document.getElementById('parentId');
+            const selectedLevel = parseInt(levelSelect.value);
+            
+            // Guardar el valor actual seleccionado
+            const currentValue = parentSelect.value;
+            
+            // Limpiar opciones
+            parentSelect.innerHTML = '<option value="">Seleccionar padre (opcional)</option>';
+            
+            if (selectedLevel === 1) {
+                // Nivel 1 no tiene padre
+                parentSelect.disabled = true;
+                return;
+            }
+            
+            parentSelect.disabled = false;
+            
+            // Obtener opciones de padre según el nivel (incluir inactivos para administración)
+            const parentLevel = selectedLevel - 1;
+            const parentOptions = menuItems.filter(item => 
+                item.level === parentLevel && 
+                (item.id !== currentEditId && item._id !== currentEditId) // Excluir el elemento actual
+            );
+            
+            parentOptions.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.id || option._id;
+                optionElement.textContent = `${option.text} (Nivel ${option.level})`;
+                parentSelect.appendChild(optionElement);
+            });
+            
+            // Restaurar el valor seleccionado si existe en las nuevas opciones
+            if (currentValue && parentSelect.querySelector(`option[value="${currentValue}"]`)) {
+                parentSelect.value = currentValue;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('icon').addEventListener('input', updateIconPreview);
+
+        // Cerrar modales al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeLogoutModal();
+            }
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateParentOptions();
+        });
+    </script>
+</body>
+</html>

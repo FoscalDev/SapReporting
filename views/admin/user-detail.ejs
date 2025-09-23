@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 5rem auto 2rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #0070f3;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eeeeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #0070f3;
+        }
+        
+        .user-info h2 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+        
+        .user-info p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-section h3 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .info-value {
+            color: #666;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .credentials-valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .credentials-invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .credentials-none {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .actions-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        .actions-section h3 {
+            margin: 0 0 1rem 0;
+            color: #333;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .action-card h4 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .action-card p {
+            margin: 0 0 1rem 0;
+            color: #666;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- SAP UI5 Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="sap-logo">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>SAP Reports</span>
+                </div>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <% if (user.picture) { %>
+                            <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                        <% } else { %>
+                            <div class="sap-user-avatar" style="background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                        <span style="font-size: 0.9rem;"><%= user.name %></span>
+                    <% } %>
+                </div>
+                <button class="sap-logout-btn" onclick="showLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin/users">Administración</a> > 
+            <a href="/admin/users">Usuarios</a> > 
+            Detalle de Usuario
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">
+                    <i class="fas fa-user"></i>
+                    Detalle de Usuario
+                </h1>
+                <a href="/admin/users" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver a Usuarios
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <%= success %>
+                    </div>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+                
+                <% if (info && info.length > 0) { %>
+                    <div class="alert alert-info">
+                        <%= info %>
+                    </div>
+                <% } %>
+
+                <!-- Perfil del usuario -->
+                <div class="user-profile">
+                    <% if (userDetail.picture) { %>
+                        <img src="<%= userDetail.picture %>" alt="Avatar" class="user-avatar-large">
+                    <% } else { %>
+                        <div class="user-avatar-large" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user" style="font-size: 2rem; color: #666;"></i>
+                        </div>
+                    <% } %>
+                    <div class="user-info">
+                        <h2><%= userDetail.name %></h2>
+                        <p><%= userDetail.email %></p>
+                        <% if (userDetail._id.toString() === user._id.toString()) { %>
+                            <small style="color: #0070f3; font-weight: 600;">(Tu cuenta)</small>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Información detallada -->
+                <div class="info-grid">
+                    <div class="info-section">
+                        <h3><i class="fas fa-info-circle"></i> Información General</h3>
+                        <div class="info-row">
+                            <span class="info-label">ID de Usuario:</span>
+                            <span class="info-value"><%= userDetail._id %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Nombre:</span>
+                            <span class="info-value"><%= userDetail.name %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value"><%= userDetail.email %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Google ID:</span>
+                            <span class="info-value"><%= userDetail.googleId || 'N/A' %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Estado:</span>
+                            <span class="status-badge status-active">Activo</span>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3><i class="fas fa-calendar"></i> Fechas de Actividad</h3>
+                        <div class="info-row">
+                            <span class="info-label">Fecha de Registro:</span>
+                            <span class="info-value">
+                                <%= new Date(userDetail.createdAt).toLocaleDateString('es-ES') %>
+                                <br>
+                                <small><%= new Date(userDetail.createdAt).toLocaleTimeString('es-ES') %></small>
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Último Acceso:</span>
+                            <span class="info-value">
+                                <% if (userDetail.lastLogin) { %>
+                                    <%= new Date(userDetail.lastLogin).toLocaleDateString('es-ES') %>
+                                    <br>
+                                    <small><%= new Date(userDetail.lastLogin).toLocaleTimeString('es-ES') %></small>
+                                <% } else { %>
+                                    <span style="color: #666;">Nunca</span>
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3><i class="fas fa-key"></i> Credenciales SAP</h3>
+                        <% if (userDetail.sapCredentials && userDetail.sapCredentials.username) { %>
+                            <div class="info-row">
+                                <span class="info-label">Estado:</span>
+                                <% if (userDetail.sapCredentials.isValid) { %>
+                                    <span class="status-badge credentials-valid">
+                                        <i class="fas fa-check"></i>
+                                        Válidas
+                                    </span>
+                                <% } else { %>
+                                    <span class="status-badge credentials-invalid">
+                                        <i class="fas fa-times"></i>
+                                        Inválidas
+                                    </span>
+                                <% } %>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Usuario SAP:</span>
+                                <span class="info-value"><%= userDetail.sapCredentials.username %></span>
+                            </div>
+                            <% if (userDetail.sapCredentials.lastUpdated) { %>
+                                <div class="info-row">
+                                    <span class="info-label">Última Actualización:</span>
+                                    <span class="info-value">
+                                        <%= new Date(userDetail.sapCredentials.lastUpdated).toLocaleDateString('es-ES') %>
+                                        <br>
+                                        <small><%= new Date(userDetail.sapCredentials.lastUpdated).toLocaleTimeString('es-ES') %></small>
+                                    </span>
+                                </div>
+                            <% } %>
+                        <% } else { %>
+                            <div class="info-row">
+                                <span class="info-label">Estado:</span>
+                                <span class="status-badge credentials-none">
+                                    <i class="fas fa-minus"></i>
+                                    No configuradas
+                                </span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Acciones administrativas -->
+                <% if (userDetail._id.toString() !== user._id.toString()) { %>
+                    <div class="actions-section">
+                        <h3><i class="fas fa-tools"></i> Acciones Administrativas</h3>
+                        <div class="actions-grid">
+                            <div class="action-card">
+                                <h4>Gestión de Credenciales SAP</h4>
+                                <p>Valida o invalida las credenciales SAP del usuario.</p>
+                                <% if (userDetail.sapCredentials && userDetail.sapCredentials.username) { %>
+                                    <% if (userDetail.sapCredentials.isValid) { %>
+                                        <form method="POST" action="/admin/users/<%= userDetail._id %>/sap-credentials" style="display: inline;">
+                                            <input type="hidden" name="action" value="invalidate">
+                                            <button type="submit" class="btn btn-warning" onclick="return confirm('¿Marcar credenciales como inválidas?')">
+                                                <i class="fas fa-ban"></i>
+                                                Invalidar Credenciales
+                                            </button>
+                                        </form>
+                                    <% } else { %>
+                                        <form method="POST" action="/admin/users/<%= userDetail._id %>/sap-credentials" style="display: inline;">
+                                            <input type="hidden" name="action" value="validate">
+                                            <button type="submit" class="btn btn-primary" onclick="return confirm('¿Marcar credenciales como válidas?')">
+                                                <i class="fas fa-check"></i>
+                                                Validar Credenciales
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                <% } else { %>
+                                    <span style="color: #666; font-size: 0.9rem;">No hay credenciales SAP configuradas</span>
+                                <% } %>
+                            </div>
+                            
+                            <div class="action-card">
+                                <h4>Eliminación de Usuario</h4>
+                                <p>Elimina permanentemente la cuenta del usuario del sistema.</p>
+                                <form method="POST" action="/admin/users/<%= userDetail._id %>/delete" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')">
+                                        <i class="fas fa-trash"></i>
+                                        Eliminar Usuario
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="actions-section">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Nota:</strong> No puedes realizar acciones administrativas en tu propia cuenta.
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

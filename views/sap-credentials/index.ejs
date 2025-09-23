@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .simple-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .simple-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Modal de confirmación personalizado */
+        .sap-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sap-modal {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .sap-modal-overlay.show .sap-modal {
+            transform: scale(1);
+        }
+        
+        .sap-modal-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sap-modal-icon {
+            font-size: 1.5rem;
+            color: #ffc107;
+        }
+        
+        .sap-modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .sap-modal-body {
+            padding: 1.5rem;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .sap-modal-message {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sap-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+        
+        .sap-modal-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-modal-btn-secondary {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        .sap-modal-btn-secondary:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .sap-modal-btn-primary {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .sap-modal-btn-primary:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051cc 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0070f3;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn {
+            min-width: 200px;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0070f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0051cc;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #0070f3;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .credentials-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-valid {
+            background-color: #28a745;
+        }
+
+        .status-invalid {
+            background-color: #dc3545;
+        }
+
+        .status-none {
+            background-color: #ffc107;
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="simple-header">
+        <h1>
+            <i class="fas fa-chart-bar"></i>
+            SAP Reports
+        </h1>
+        <button class="logout-btn" onclick="showLogoutModal()">
+            <i class="fas fa-sign-out-alt"></i>
+            Cerrar Sesión
+        </button>
+    </header>
+    
+    <!-- Modal de confirmación de logout -->
+    <div class="sap-modal-overlay" id="logoutModal">
+        <div class="sap-modal">
+            <div class="sap-modal-header">
+                <i class="fas fa-sign-out-alt sap-modal-icon"></i>
+                <h3 class="sap-modal-title">Confirmar Cierre de Sesión</h3>
+            </div>
+            <div class="sap-modal-body">
+                <p class="sap-modal-message">
+                    ¿Estás seguro de que quieres cerrar sesión?<br>
+                    <small style="color: #666; font-size: 0.9rem;">
+                        Tendrás que iniciar sesión nuevamente para acceder a los reportes.
+                    </small>
+                </p>
+            </div>
+            <div class="sap-modal-actions">
+                <button class="sap-modal-btn sap-modal-btn-secondary" onclick="closeLogoutModal()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button class="sap-modal-btn sap-modal-btn-primary" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sí, Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="fas fa-shield-alt"></i> Credenciales SAP</h1>
+                <p>Gestiona tu acceso seguro a los servicios SAP para consultar reportes</p>
+            </div>
+
+            <div class="card-body">
+                <div class="user-info">
+                    <h3>¡Hola, <%= user.name %>!</h3>
+                    <p>Para acceder a los reportes SAP, necesitas configurar tus credenciales de usuario.</p>
+                </div>
+
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <%= success %>
+                    </div>
+                <% } %>
+
+        <% if (typeof warning !== 'undefined' && warning && warning.length > 0) { %>
+            <div class="alert alert-warning">
+                <%= warning %>
+            </div>
+        <% } %>
+
+                <div class="credentials-status">
+                    <% if (hasCredentials) { %>
+                        <div class="status-indicator status-valid"></div>
+                        <span><strong>Credenciales configuradas</strong> - Usuario: <%= user.sapCredentials.username %></span>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                            <% if (typeof session !== 'undefined' && session.sapTempPassword) { %>
+                                <span style="color: #28a745;">✅ Credenciales disponibles en esta sesión</span>
+                            <% } else { %>
+                                <span style="color: #ffc107;">⚠️ Credenciales no disponibles en sesión - Actualiza tus credenciales para continuar</span>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="status-indicator status-none"></div>
+                        <span><strong>Credenciales no configuradas</strong></span>
+                    <% } %>
+                </div>
+
+                <form action="<%= hasCredentials ? '/sap-credentials/update' : '/sap-credentials' %>" method="POST">
+                    <div class="form-group">
+                        <label for="username">Usuario SAP</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            value="<%= hasCredentials ? user.sapCredentials.username : '' %>"
+                            placeholder="Ingresa tu usuario SAP"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña SAP</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Ingresa tu contraseña SAP"
+                            required
+                        >
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <%= hasCredentials ? 'Actualizar Credenciales' : 'Guardar Credenciales' %>
+                        </button>
+                        
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Ir al Sistema
+                        </a>
+                    </div>
+                </form>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Seguridad:</strong> Tus credenciales se almacenan de forma encriptada y segura. Solo se utilizan para acceder a los servicios SAP y nunca se comparten con terceros.
+                </div>
+                
+                <% if (hasCredentials) { %>
+                <div class="alert alert-success">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Consejo:</strong> Si cambias tu contraseña en SAP, recuerda actualizarla aquí también para mantener el acceso a los reportes.
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        
+        // Función para mostrar modal de logout
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('show');
+        }
+        
+        // Función para cerrar modal de logout
+        function closeLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('show');
+        }
+        
+        // Función para confirmar logout
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+        
+        // Cerrar modal al hacer clic fuera de él
+        document.addEventListener('click', function(e) {
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (e.target === logoutModal) {
+                closeLogoutModal();
+            }
+        });
+        
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+        
+    </script>
+</body>
+</html>

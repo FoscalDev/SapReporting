@@ -1,0 +1,318 @@
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+        <li class="breadcrumb-item active">Resumen Organizacional</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-building me-2"></i>Resumen por Unidad Organizacional</h1>
+        <p class="text-muted">Análisis consolidado de empleados por área organizacional</p>
+    </div>
+</div>
+
+<!-- Estadísticas generales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0"><%= summary.reduce((sum, unit) => sum + unit.totalEmployees, 0) %></h4>
+                        <p class="mb-0">Total Empleados</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0"><%= totalUnits %></h4>
+                        <p class="mb-0">Unidades Org.</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-sitemap fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">
+                            <%= new Intl.NumberFormat('es-CO', {
+                                style: 'currency',
+                                currency: 'COP',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }).format(summary.reduce((sum, unit) => sum + unit.totalSalary, 0)) %>
+                        </h4>
+                        <p class="mb-0">Nómina Total</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">
+                            <%= new Intl.NumberFormat('es-CO', {
+                                style: 'currency',
+                                currency: 'COP',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }).format(summary.reduce((sum, unit) => sum + unit.totalSalary, 0) / summary.reduce((sum, unit) => sum + unit.totalEmployees, 0)) %>
+                        </h4>
+                        <p class="mb-0">Salario Promedio</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de resumen -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Resumen por Unidad Organizacional</h5>
+                <div>
+                    <button class="btn btn-outline-primary btn-sm" onclick="exportSummary()">
+                        <i class="fas fa-download me-1"></i>Exportar
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="window.print()">
+                        <i class="fas fa-print me-1"></i>Imprimir
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="summaryTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Unidad Organizacional</th>
+                                <th>Código</th>
+                                <th class="text-center">Empleados</th>
+                                <th class="text-end">Salario Total</th>
+                                <th class="text-end">Salario Promedio</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% summary.forEach(unit => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= unit.unitName %></strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary"><%= unit.unitCode %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary fs-6"><%= unit.totalEmployees %></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong class="text-success">
+                                            <%= new Intl.NumberFormat('es-CO', {
+                                                style: 'currency',
+                                                currency: 'COP',
+                                                minimumFractionDigits: 0
+                                            }).format(unit.totalSalary) %>
+                                        </strong>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong class="text-info">
+                                            <%= new Intl.NumberFormat('es-CO', {
+                                                style: 'currency',
+                                                currency: 'COP',
+                                                minimumFractionDigits: 0
+                                            }).format(unit.averageSalary) %>
+                                        </strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="showUnitDetails('<%= unit.unitName %>')">
+                                            <i class="fas fa-eye me-1"></i>Ver Detalle
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para detalles de unidad -->
+<div class="modal fade" id="unitDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-users me-2"></i>
+                    <span id="modalUnitName"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="unitDetailsContent">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="exportUnitData()">
+                    <i class="fas fa-download me-1"></i>Exportar Unidad
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Datos de las unidades para JavaScript
+    const summaryData = <%- JSON.stringify(summary) %>;
+
+    function showUnitDetails(unitName) {
+        const unit = summaryData.find(u => u.unitName === unitName);
+        if (!unit) return;
+
+        document.getElementById('modalUnitName').textContent = unitName;
+        
+        const content = `
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Código Unidad:</strong> ${unit.unitCode}
+                </div>
+                <div class="col-md-6">
+                    <strong>Total Empleados:</strong> ${unit.totalEmployees}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Salario Total:</strong> 
+                    ${new Intl.NumberFormat('es-CO', {
+                        style: 'currency',
+                        currency: 'COP',
+                        minimumFractionDigits: 0
+                    }).format(unit.totalSalary)}
+                </div>
+                <div class="col-md-6">
+                    <strong>Salario Promedio:</strong> 
+                    ${new Intl.NumberFormat('es-CO', {
+                        style: 'currency',
+                        currency: 'COP',
+                        minimumFractionDigits: 0
+                    }).format(unit.averageSalary)}
+                </div>
+            </div>
+            <hr>
+            <h6>Empleados de la Unidad:</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Cargo</th>
+                            <th class="text-end">Salario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${unit.employees.map(emp => `
+                            <tr>
+                                <td>${emp.id}</td>
+                                <td>${emp.name || 'Sin nombre'}</td>
+                                <td>${emp.jobDescription}</td>
+                                <td class="text-end">
+                                    ${new Intl.NumberFormat('es-CO', {
+                                        style: 'currency',
+                                        currency: 'COP',
+                                        minimumFractionDigits: 0
+                                    }).format(emp.baseSalary)}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('unitDetailsContent').innerHTML = content;
+        
+        // Guardar datos para exportación
+        window.currentUnitData = unit;
+        
+        const modal = new bootstrap.Modal(document.getElementById('unitDetailsModal'));
+        modal.show();
+    }
+
+    function exportSummary() {
+        const csv = [
+            'Unidad Organizacional,Código,Total Empleados,Salario Total,Salario Promedio',
+            ...summaryData.map(unit => [
+                `"${unit.unitName}"`,
+                unit.unitCode,
+                unit.totalEmployees,
+                unit.totalSalary,
+                unit.averageSalary
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resumen_organizacional_' + new Date().toISOString().split('T')[0] + '.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    function exportUnitData() {
+        if (!window.currentUnitData) return;
+        
+        const unit = window.currentUnitData;
+        const csv = [
+            'ID,Nombre,Cargo,Código Cargo,Salario Base,Horas Contrato',
+            ...unit.employees.map(emp => [
+                emp.id,
+                `"${emp.name || 'Sin nombre'}"`,
+                `"${emp.jobDescription}"`,
+                emp.jobCode,
+                emp.baseSalary,
+                emp.contractedHours
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `unidad_${unit.unitCode}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+</script>

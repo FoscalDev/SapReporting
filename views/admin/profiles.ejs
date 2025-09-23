@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 5rem auto 2rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #0070f3;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eeeeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: #0070f3;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .profile-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .profile-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .profile-card.inactive {
+            opacity: 0.6;
+            background-color: #f8f9fa;
+        }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .profile-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge-system {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .badge-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .profile-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0070f3;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .permissions-list {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .permissions-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .permission-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+        }
+        
+        .permission-allowed {
+            background-color: #28a745;
+        }
+        
+        .permission-denied {
+            background-color: #dc3545;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eeeeee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .empty-state p {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- SAP UI5 Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="sap-logo">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>SAP Reports</span>
+                </div>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <% if (user.picture) { %>
+                            <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                        <% } else { %>
+                            <div class="sap-user-avatar" style="background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                        <span style="font-size: 0.9rem;"><%= user.name %></span>
+                    <% } %>
+                </div>
+                <button class="sap-logout-btn" onclick="showLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Dashboard</a> > 
+            <a href="/admin/users">Administración</a> > 
+            Gestión de Perfiles
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">
+                    <i class="fas fa-users-cog"></i>
+                    Gestión de Perfiles
+                </h1>
+                <button class="btn btn-primary" onclick="showCreateModal()">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Perfil
+                </button>
+            </div>
+            <div class="card-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <%= success %>
+                    </div>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+                
+                <% if (info && info.length > 0) { %>
+                    <div class="alert alert-info">
+                        <%= info %>
+                    </div>
+                <% } %>
+
+                <% if (profiles && profiles.length > 0) { %>
+                    <div class="profiles-grid">
+                        <% profiles.forEach(function(profile) { %>
+                            <div class="profile-card <%= profile.isActive ? '' : 'inactive' %>">
+                                <div class="profile-header">
+                                    <h3 class="profile-title"><%= profile.name %></h3>
+                                    <div>
+                                        <% if (profile.isSystemProfile) { %>
+                                            <span class="profile-badge badge-system">Sistema</span>
+                                        <% } %>
+                                        <span class="profile-badge <%= profile.isActive ? 'badge-active' : 'badge-inactive' %>">
+                                            <%= profile.isActive ? 'Activo' : 'Inactivo' %>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <p class="profile-description"><%= profile.description %></p>
+                                
+                                <div class="profile-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number"><%= profile.userCount %></span>
+                                        <span class="stat-label">Usuarios</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number"><%= profile.menuCount %></span>
+                                        <span class="stat-label">Menús</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="permissions-list">
+                                    <div class="permissions-title">Permisos:</div>
+                                    <div class="permissions-grid">
+                                        <div class="permission-item">
+                                            <div class="permission-icon <%= profile.permissions.canViewReports ? 'permission-allowed' : 'permission-denied' %>">
+                                                <i class="fas fa-<%= profile.permissions.canViewReports ? 'check' : 'times' %>"></i>
+                                            </div>
+                                            Ver Reportes
+                                        </div>
+                                        <div class="permission-item">
+                                            <div class="permission-icon <%= profile.permissions.canViewAdmin ? 'permission-allowed' : 'permission-denied' %>">
+                                                <i class="fas fa-<%= profile.permissions.canViewAdmin ? 'check' : 'times' %>"></i>
+                                            </div>
+                                            Administración
+                                        </div>
+                                        <div class="permission-item">
+                                            <div class="permission-icon <%= profile.permissions.canManageUsers ? 'permission-allowed' : 'permission-denied' %>">
+                                                <i class="fas fa-<%= profile.permissions.canManageUsers ? 'check' : 'times' %>"></i>
+                                            </div>
+                                            Gestionar Usuarios
+                                        </div>
+                                        <div class="permission-item">
+                                            <div class="permission-icon <%= profile.permissions.canManageMenus ? 'permission-allowed' : 'permission-denied' %>">
+                                                <i class="fas fa-<%= profile.permissions.canManageMenus ? 'check' : 'times' %>"></i>
+                                            </div>
+                                            Gestionar Menús
+                                        </div>
+                                        <div class="permission-item">
+                                            <div class="permission-icon <%= profile.permissions.canManageProfiles ? 'permission-allowed' : 'permission-denied' %>">
+                                                <i class="fas fa-<%= profile.permissions.canManageProfiles ? 'check' : 'times' %>"></i>
+                                            </div>
+                                            Gestionar Perfiles
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-actions">
+                                    <a href="/admin/profiles/<%= profile._id %>/menus" class="btn btn-info">
+                                        <i class="fas fa-bars"></i>
+                                        Menús (<%= profile.menuCount %>)
+                                    </a>
+                                    <a href="/admin/profiles/<%= profile._id %>/users" class="btn btn-success">
+                                        <i class="fas fa-users"></i>
+                                        Usuarios (<%= profile.userCount %>)
+                                    </a>
+                                    <button class="btn btn-warning" onclick="showEditModal('<%= profile._id %>', '<%= profile.name %>', '<%= profile.description %>', '<%= profile.isActive %>', '<%= JSON.stringify(profile.permissions) %>')">
+                                        <i class="fas fa-edit"></i>
+                                        Editar
+                                    </button>
+                                    <% if (!profile.isSystemProfile) { %>
+                                        <form method="POST" action="/admin/profiles/<%= profile._id %>/toggle" style="display: inline;">
+                                            <button type="submit" class="btn <%= profile.isActive ? 'btn-secondary' : 'btn-success' %>">
+                                                <i class="fas fa-<%= profile.isActive ? 'eye-slash' : 'eye' %>"></i>
+                                                <%= profile.isActive ? 'Desactivar' : 'Activar' %>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/profiles/<%= profile._id %>/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este perfil?')">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-users-cog"></i>
+                        <h3>No hay perfiles configurados</h3>
+                        <p>Crea tu primer perfil para comenzar a gestionar los permisos de los usuarios.</p>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="fas fa-plus"></i>
+                            Crear Primer Perfil
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar perfil -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Nuevo Perfil</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="profileForm" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Nombre del Perfil *</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description" class="form-label">Descripción *</label>
+                        <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Permisos:</label>
+                        <div class="permissions-grid" style="grid-template-columns: 1fr;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="checkbox" name="permissions[canViewReports]" value="true">
+                                <span>Ver Reportes</span>
+                            </label>
+                            <input type="hidden" name="permissions[canViewReports]" value="false">
+                            
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="checkbox" name="permissions[canViewAdmin]" value="true">
+                                <span>Acceso a Administración</span>
+                            </label>
+                            <input type="hidden" name="permissions[canViewAdmin]" value="false">
+                            
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="checkbox" name="permissions[canManageUsers]" value="true">
+                                <span>Gestionar Usuarios</span>
+                            </label>
+                            <input type="hidden" name="permissions[canManageUsers]" value="false">
+                            
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="checkbox" name="permissions[canManageMenus]" value="true">
+                                <span>Gestionar Menús</span>
+                            </label>
+                            <input type="hidden" name="permissions[canManageMenus]" value="false">
+                            
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="checkbox" name="permissions[canManageProfiles]" value="true">
+                                <span>Gestionar Perfiles</span>
+                            </label>
+                            <input type="hidden" name="permissions[canManageProfiles]" value="false">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="activeGroup" style="display: none;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="isActive" name="isActive" value="true">
+                            Perfil activo
+                        </label>
+                        <!-- Campo oculto para manejar el caso cuando el checkbox no está marcado -->
+                        <input type="hidden" name="isActive" value="false">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Crear Perfil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Cierre de Sesión</h3>
+                <button class="close-btn" onclick="closeLogoutModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres cerrar sesión?</p>
+                <small style="color: #666;">Tendrás que iniciar sesión nuevamente para acceder a los reportes.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeLogoutModal()">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmLogout()">Sí, Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+        let currentEditId = null;
+
+        function showCreateModal() {
+            isEditMode = false;
+            currentEditId = null;
+            
+            document.getElementById('modalTitle').textContent = 'Nuevo Perfil';
+            document.getElementById('submitBtn').textContent = 'Crear Perfil';
+            document.getElementById('profileForm').action = '/admin/profiles/create';
+            
+            // Limpiar formulario
+            document.getElementById('profileForm').reset();
+            
+            document.getElementById('profileModal').classList.add('show');
+        }
+
+        function showEditModal(id, name, description, isActive, permissions) {
+            isEditMode = true;
+            currentEditId = id;
+            
+            document.getElementById('modalTitle').textContent = 'Editar Perfil';
+            document.getElementById('submitBtn').textContent = 'Actualizar Perfil';
+            document.getElementById('profileForm').action = `/admin/profiles/${id}/update`;
+            
+            // Llenar formulario
+            document.getElementById('name').value = name || '';
+            document.getElementById('description').value = description || '';
+            
+            // Cargar permisos
+            try {
+                const permissionsObj = JSON.parse(permissions);
+                
+                // Marcar checkboxes de permisos
+                const permissionCheckboxes = [
+                    'permissions[canViewReports]',
+                    'permissions[canViewAdmin]',
+                    'permissions[canManageUsers]',
+                    'permissions[canManageMenus]',
+                    'permissions[canManageProfiles]'
+                ];
+                
+                permissionCheckboxes.forEach(permissionName => {
+                    const checkbox = document.querySelector(`input[name="${permissionName}"]`);
+                    if (checkbox) {
+                        const permissionKey = permissionName.replace('permissions[', '').replace(']', '');
+                        checkbox.checked = permissionsObj[permissionKey] === true;
+                    }
+                });
+            } catch (error) {
+                console.error('Error al parsear permisos:', error);
+            }
+            
+            // Mostrar opción de activar/inactivar
+            const activeGroup = document.getElementById('activeGroup');
+            activeGroup.style.display = 'block';
+            
+            // Convertir string a boolean
+            const isActiveBool = isActive === 'true' || isActive === true;
+            document.getElementById('isActive').checked = isActiveBool;
+            
+            document.getElementById('profileModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        // Funciones del modal de logout
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+
+        // Cerrar modales al hacer clic fuera de él
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeLogoutModal();
+            }
+        });
+    </script>
+</body>
+</html>

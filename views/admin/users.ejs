@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sap-ui5.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .sap-layout-container {
+            display: flex;
+            margin-top: 3rem;
+            min-height: calc(100vh - 3rem);
+        }
+        
+        .sap-side-nav {
+            width: 16rem;
+            background-color: white;
+            border-right: 1px solid #eeeeee;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .sap-side-nav.collapsed {
+            width: 4rem;
+        }
+        
+        .sap-side-nav.collapsed .sap-nav-text,
+        .sap-side-nav.collapsed .sap-nav-section-title,
+        .sap-side-nav.collapsed .sap-side-nav-header h3,
+        .sap-side-nav.collapsed .sap-nav-link span {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        .sap-side-nav.collapsed .sap-nav-link {
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .sap-side-nav.collapsed .sap-nav-link > * {
+            flex-shrink: 0;
+        }
+        
+        .sap-side-nav-header {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eeeeee;
+        }
+        
+        .sap-side-nav-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .sap-side-nav-content {
+            padding: 1rem 0;
+        }
+        
+        .sap-nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sap-nav-section-title {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .sap-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sap-nav-item {
+            margin: 0;
+        }
+        
+        .sap-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sap-nav-link:hover {
+            background-color: #f8f9fa;
+            color: #0070f3;
+        }
+        
+        .sap-nav-link.active {
+            background-color: #e3f2fd;
+            color: #0070f3;
+            border-left-color: #0070f3;
+        }
+        
+        .sap-nav-link i {
+            width: 1.5rem;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .sap-main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .sap-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .sap-card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eeeeee;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .sap-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .sap-card-body {
+            padding: 1.5rem;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eeeeee;
+        }
+        
+        .users-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .users-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #eeeeee;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .credentials-valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .credentials-invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .credentials-none {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        
+        .pagination .btn {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .pagination-info {
+            margin: 0 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0070f3;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal de confirmación personalizado */
+        .sap-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sap-modal {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .sap-modal-overlay.show .sap-modal {
+            transform: scale(1);
+        }
+        
+        .sap-modal-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sap-modal-icon {
+            font-size: 1.5rem;
+            color: #ffc107;
+        }
+        
+        .sap-modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .sap-modal-body {
+            padding: 1.5rem;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .sap-modal-message {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sap-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+        
+        .sap-modal-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-modal-btn-secondary {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        .sap-modal-btn-secondary:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .sap-modal-btn-primary {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .sap-modal-btn-primary:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <!-- SAP UI5 Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <button class="sap-menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <button class="sap-menu-toggle" id="expandToggle" title="Expandir/Contraer Menú">
+                    <i class="fas fa-angle-double-left" id="expandIcon"></i>
+                </button>
+                <div class="sap-logo">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>SAP Reports</span>
+                </div>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <% if (user.picture) { %>
+                            <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                        <% } else { %>
+                            <div class="sap-user-avatar" style="background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                        <span style="font-size: 0.9rem;"><%= user.name %></span>
+                    <% } %>
+                </div>
+                <button class="sap-logout-btn" onclick="showLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SAP UI5 Layout Container -->
+    <div class="sap-layout-container">
+        <!-- Side Navigation -->
+        <aside class="sap-side-nav" id="sideNav">
+            <div class="sap-side-nav-header">
+                <h3>Reportes</h3>
+            </div>
+                <nav class="sap-side-nav-content">
+                    <% if (typeof dynamicMenus !== 'undefined' && dynamicMenus && menuStructure && menuStructure.hierarchy) { %>
+                        <!-- Menús dinámicos -->
+                        <% Object.keys(menuStructure.hierarchy).forEach(function(sectionKey) { %>
+                            <% const section = menuStructure.hierarchy[sectionKey]; %>
+                            <div class="sap-nav-section">
+                                <div class="sap-nav-section-title"><%= section.item.text %></div>
+                                <ul class="sap-nav-list">
+                                    <% section.children.forEach(function(child) { %>
+                                        <li class="sap-nav-item">
+                                            <a href="<%= child.route %>" class="sap-nav-link <%= child.route === '/admin/users' ? 'active' : '' %>">
+                                                <i class="<%= child.icon %>"></i>
+                                                <span class="sap-nav-text"><%= child.text %></span>
+                                            </a>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <!-- Menús estáticos como fallback -->
+                        <div class="sap-nav-section">
+                            <div class="sap-nav-section-title">Reportes de Nómina</div>
+                            <ul class="sap-nav-list">
+                                <li class="sap-nav-item">
+                                    <a href="/reports" class="sap-nav-link">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span class="sap-nav-text">Salarios Nómina</span>
+                                    </a>
+                                </li>
+                                <li class="sap-nav-item">
+                                    <a href="/summary/organizational-units" class="sap-nav-link">
+                                        <i class="fas fa-building"></i>
+                                        <span class="sap-nav-text">Resumen Organizacional</span>
+                                    </a>
+                                </li>
+                                <li class="sap-nav-item">
+                                    <a href="/search" class="sap-nav-link">
+                                        <i class="fas fa-search"></i>
+                                        <span class="sap-nav-text">Búsqueda Avanzada</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="sap-nav-section">
+                            <div class="sap-nav-section-title">Administración</div>
+                            <ul class="sap-nav-list">
+                                <li class="sap-nav-item">
+                                    <a href="/admin/users" class="sap-nav-link active">
+                                        <i class="fas fa-users"></i>
+                                        <span class="sap-nav-text">Gestión de Usuarios</span>
+                                    </a>
+                                </li>
+                        <li class="sap-nav-item">
+                            <a href="/admin/menu-config" class="sap-nav-link">
+                                <i class="fas fa-bars"></i>
+                                <span class="sap-nav-text">Configuración de Menús</span>
+                            </a>
+                        </li>
+                        <li class="sap-nav-item">
+                            <a href="/admin/profiles" class="sap-nav-link">
+                                <i class="fas fa-users-cog"></i>
+                                <span class="sap-nav-text">Gestión de Perfiles</span>
+                            </a>
+                        </li>
+                            </ul>
+                        </div>
+                    <% } %>
+                </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="sap-main-content" id="mainContent">
+            <div class="sap-card">
+                <div class="sap-card-header">
+                    <h1 class="sap-card-title">
+                        <i class="fas fa-users"></i>
+                        Gestión de Usuarios
+                    </h1>
+                </div>
+                <div class="sap-card-body">
+                    <% if (success && success.length > 0) { %>
+                        <div class="alert alert-success">
+                            <%= success %>
+                        </div>
+                    <% } %>
+                    
+                    <% if (error && error.length > 0) { %>
+                        <div class="alert alert-error">
+                            <%= error %>
+                        </div>
+                    <% } %>
+                    
+                    <% if (info && info.length > 0) { %>
+                        <div class="alert alert-info">
+                            <%= info %>
+                        </div>
+                    <% } %>
+
+                    <!-- Estadísticas -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number"><%= pagination.totalUsers %></div>
+                            <div class="stat-label">Total de Usuarios</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number"><%= users.filter(u => u.sapCredentials && u.sapCredentials.isValid).length %></div>
+                            <div class="stat-label">Con Credenciales SAP</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number"><%= users.filter(u => u.lastLogin && (new Date() - new Date(u.lastLogin)) < 7*24*60*60*1000).length %></div>
+                            <div class="stat-label">Activos (7 días)</div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de usuarios -->
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Credenciales SAP</th>
+                                <th>Último Acceso</th>
+                                <th>Fecha de Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (users && users.length > 0) { %>
+                                <% users.forEach(function(userItem) { %>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                <% if (userItem.picture) { %>
+                                                    <img src="<%= userItem.picture %>" alt="Avatar" class="user-avatar">
+                                                <% } else { %>
+                                                    <div class="user-avatar" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user" style="color: #666;"></i>
+                                                    </div>
+                                                <% } %>
+                                                <div>
+                                                    <div style="font-weight: 600;"><%= userItem.name %></div>
+                                                    <% if (userItem._id.toString() === user._id.toString()) { %>
+                                                        <small style="color: #0070f3;">(Tú)</small>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><%= userItem.email %></td>
+                                        <td>
+                                            <% if (userItem.sapCredentials && userItem.sapCredentials.username) { %>
+                                                <% if (userItem.sapCredentials.isValid) { %>
+                                                    <span class="status-badge credentials-valid">
+                                                        <i class="fas fa-check"></i>
+                                                        Válidas
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="status-badge credentials-invalid">
+                                                        <i class="fas fa-times"></i>
+                                                        Inválidas
+                                                    </span>
+                                                <% } %>
+                                                <br>
+                                                <small style="color: #666;">Usuario: <%= userItem.sapCredentials.username %></small>
+                                            <% } else { %>
+                                                <span class="status-badge credentials-none">
+                                                    <i class="fas fa-minus"></i>
+                                                    No configuradas
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (userItem.lastLogin) { %>
+                                                <%= new Date(userItem.lastLogin).toLocaleDateString('es-ES') %>
+                                                <br>
+                                                <small style="color: #666;"><%= new Date(userItem.lastLogin).toLocaleTimeString('es-ES') %></small>
+                                            <% } else { %>
+                                                <span style="color: #666;">Nunca</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(userItem.createdAt).toLocaleDateString('es-ES') %>
+                                            <br>
+                                            <small style="color: #666;"><%= new Date(userItem.createdAt).toLocaleTimeString('es-ES') %></small>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/users/<%= userItem._id %>" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                                Ver Detalle
+                                            </a>
+                                            <% if (userItem._id.toString() !== user._id.toString()) { %>
+                                                <form method="POST" action="/admin/users/<%= userItem._id %>/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este usuario?')">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem; color: #666;">
+                                        <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                        No hay usuarios registrados
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+
+                    <!-- Paginación -->
+                    <% if (pagination.totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (pagination.hasPrev) { %>
+                                <a href="?page=<%= pagination.prevPage %>" class="btn btn-secondary">
+                                    <i class="fas fa-chevron-left"></i>
+                                    Anterior
+                                </a>
+                            <% } %>
+                            
+                            <span class="pagination-info">
+                                Página <%= pagination.currentPage %> de <%= pagination.totalPages %>
+                                (<%= pagination.totalUsers %> usuarios total)
+                            </span>
+                            
+                            <% if (pagination.hasNext) { %>
+                                <a href="?page=<%= pagination.nextPage %>" class="btn btn-secondary">
+                                    Siguiente
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de confirmación de logout -->
+    <div class="sap-modal-overlay" id="logoutModal">
+        <div class="sap-modal">
+            <div class="sap-modal-header">
+                <i class="fas fa-sign-out-alt sap-modal-icon"></i>
+                <h3 class="sap-modal-title">Confirmar Cierre de Sesión</h3>
+            </div>
+            <div class="sap-modal-body">
+                <p class="sap-modal-message">
+                    ¿Estás seguro de que quieres cerrar sesión?<br>
+                    <small style="color: #666; font-size: 0.9rem;">
+                        Tendrás que iniciar sesión nuevamente para acceder a los reportes.
+                    </small>
+                </p>
+            </div>
+            <div class="sap-modal-actions">
+                <button class="sap-modal-btn sap-modal-btn-secondary" onclick="closeLogoutModal()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button class="sap-modal-btn sap-modal-btn-primary" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sí, Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para el menú lateral
+        document.addEventListener('DOMContentLoaded', function() {
+            const sideNav = document.getElementById('sideNav');
+            const expandToggle = document.getElementById('expandToggle');
+            const expandIcon = document.getElementById('expandIcon');
+
+            expandToggle.addEventListener('click', function() {
+                if (sideNav.classList.contains('collapsed')) {
+                    sideNav.classList.remove('collapsed');
+                    expandIcon.classList.remove('fa-angle-double-right');
+                    expandIcon.classList.add('fa-angle-double-left');
+                } else {
+                    sideNav.classList.add('collapsed');
+                    expandIcon.classList.remove('fa-angle-double-left');
+                    expandIcon.classList.add('fa-angle-double-right');
+                }
+            });
+        });
+        
+        // Funciones del modal de logout
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('show');
+        }
+        
+        function closeLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('show');
+        }
+        
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+        
+        // Cerrar modal al hacer clic fuera de él
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('logoutModal');
+            if (e.target === modal) {
+                closeLogoutModal();
+            }
+        });
+        
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+    </script>
+</body>
+</html>

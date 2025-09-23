@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #0070f3;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eeeeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: #0070f3;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+            outline: none;
+        }
+        
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .user-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .user-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .user-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+        
+        .user-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .user-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .badge-primary {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .assign-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .assign-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Dashboard</a> > 
+            <a href="/admin/users">Administración</a> > 
+            <a href="/admin/profiles">Perfiles</a> > 
+            Usuarios del Perfil
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">
+                    <i class="fas fa-users"></i>
+                    Usuarios del Perfil: <%= profile.name %>
+                </h1>
+                <a href="/admin/profiles" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver a Perfiles
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <%= success %>
+                    </div>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <!-- Sección para asignar nuevo usuario -->
+                <div class="assign-section">
+                    <h3 style="margin-top: 0;">Asignar Usuario al Perfil</h3>
+                    <form method="POST" action="/admin/profiles/<%= profile._id %>/users/assign" class="assign-form">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="userId" class="form-label">Seleccionar Usuario</label>
+                            <select id="userId" name="userId" class="form-control" required>
+                                <option value="">Seleccionar usuario...</option>
+                                <% allUsers.forEach(function(user) { %>
+                                    <% const hasProfile = userProfiles.some(up => up.user._id.toString() === user._id.toString()); %>
+                                    <% if (!hasProfile) { %>
+                                        <option value="<%= user._id %>"><%= user.name %> (<%= user.email %>)</option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" name="isPrimary" value="true">
+                                <span>Perfil Primario</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Asignar Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Lista de usuarios asignados -->
+                <% if (userProfiles && userProfiles.length > 0) { %>
+                    <div class="users-grid">
+                        <% userProfiles.forEach(function(userProfile) { %>
+                            <div class="user-card">
+                                <div class="user-header">
+                                    <% if (userProfile.user.picture) { %>
+                                        <img src="<%= userProfile.user.picture %>" alt="Avatar" class="user-avatar">
+                                    <% } else { %>
+                                        <div class="user-avatar" style="background-color: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-user" style="color: #666;"></i>
+                                        </div>
+                                    <% } %>
+                                    <div class="user-info">
+                                        <h4><%= userProfile.user.name %></h4>
+                                        <p><%= userProfile.user.email %></p>
+                                    </div>
+                                    <% if (userProfile.isPrimary) { %>
+                                        <span class="user-badge badge-primary">Primario</span>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="user-actions">
+                                    <% if (!userProfile.isPrimary) { %>
+                                        <form method="POST" action="/admin/profiles/<%= profile._id %>/users/<%= userProfile.user._id %>/set-primary" style="display: inline;">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-star"></i>
+                                                Hacer Primario
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                    
+                                    <form method="POST" action="/admin/profiles/<%= profile._id %>/users/<%= userProfile.user._id %>/remove" style="display: inline;" onsubmit="return confirm('¿Estás seguro de remover este usuario del perfil?')">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-user-minus"></i>
+                                            Remover
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No hay usuarios asignados</h3>
+                        <p>Asigna usuarios a este perfil usando el formulario de arriba.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
