@@ -38,7 +38,10 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
             currentPage: 'menu-config',
             menuItems: menuItems,
             menuStructure: menuStructure,
-            user: req.user
+            user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error al obtener configuración de menús:', error);

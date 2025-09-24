@@ -48,7 +48,10 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
             breadcrumb: 'Administración > Gestión de Perfiles',
             currentPage: 'profiles',
             profiles: profilesWithStats,
-            user: req.user
+            user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error al obtener perfiles:', error);
@@ -229,7 +232,10 @@ router.get('/:id/menus', requireAuth, requireAdmin, async (req, res) => {
             profile: profile,
             allMenus: allMenus,
             assignedMenuIds: assignedMenuIds,
-            user: req.user
+            user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error al cargar configuración de menús:', error);
@@ -289,7 +295,10 @@ router.get('/:id/users', requireAuth, requireAdmin, async (req, res) => {
             profile: profile,
             userProfiles: userProfiles,
             allUsers: allUsers,
-            user: req.user
+            user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error al cargar usuarios del perfil:', error);

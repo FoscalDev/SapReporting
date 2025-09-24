@@ -46,6 +46,9 @@ router.get('/users', requireAuth, requireAdmin, async (req, res) => {
             currentPage: 'admin-users',
             users: users,
             user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info'),
             pagination: {
                 currentPage: page,
                 totalPages: totalPages,
@@ -80,7 +83,10 @@ router.get('/users/:id', requireAuth, requireAdmin, async (req, res) => {
             breadcrumb: 'Administración > Usuarios > Detalle',
             currentPage: 'admin-users',
             userDetail: user,
-            user: req.user
+            user: req.user,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error al obtener detalle del usuario:', error);
