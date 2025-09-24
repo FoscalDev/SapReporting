@@ -5,7 +5,9 @@ const passport = require('passport');
 // Página de login
 router.get('/login', (req, res) => {
     res.render('auth/login', {
-        title: 'Iniciar Sesión'
+        title: 'Iniciar Sesión',
+        error: req.flash('error'),
+        success: req.flash('success')
     });
 });
 
