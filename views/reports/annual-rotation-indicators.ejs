@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051a2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .filters-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .multi-select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .multi-select-button {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .multi-select-button:hover {
+            border-color: #0070f3;
+        }
+        
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .multi-select-dropdown.show {
+            display: block;
+        }
+        
+        .multi-select-option {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .multi-select-option:hover {
+            background: #f8f9fa;
+        }
+        
+        .multi-select-option input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        
+        .indicators-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #0070f3;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.75rem;
+        }
+        
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .indicator-row {
+            font-weight: 500;
+        }
+        
+        .retired-row {
+            background: #fff5f5;
+        }
+        
+        .workers-start-row {
+            background: #f0f8ff;
+            color: #0070f3;
+        }
+        
+        .workers-end-row {
+            background: #f0f8ff;
+            color: #0070f3;
+        }
+        
+        .average-row {
+            background: #fff8e1;
+            font-weight: 600;
+        }
+        
+        .percentage-row {
+            background: #fff8e1;
+            font-weight: 600;
+        }
+        
+        .nav-links {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-links a {
+            color: #0070f3;
+            text-decoration: none;
+            margin-right: 1rem;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .year-selector {
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            margin-right: 1rem;
+        }
+        
+        .btn-apply-filters {
+            background: #0070f3;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+        
+        .btn-apply-filters:hover {
+            background: #0051a2;
+        }
+        
+        .btn-clear-filters {
+            background: #6c757d;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+        
+        .btn-clear-filters:hover {
+            background: #545b62;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sap-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Indicadores de Rotación Anual
+                    </h1>
+                    <p class="mb-0 mt-1">Análisis mensual de rotación de personal - <%= year %></p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <% if (user && user.name) { %>
+                        <div class="sap-user-info justify-content-end">
+                            <div class="sap-user-details">
+                                <img src="https://via.placeholder.com/32x32/0070f3/ffffff?text=<%= user.name.charAt(0).toUpperCase() %>" 
+                                     alt="Avatar" class="sap-user-avatar">
+                                <span><%= user.name %></span>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Navegación -->
+        <div class="nav-links">
+            <a href="/reports/personnel-rotation">
+                <i class="fas fa-arrow-left me-1"></i>
+                Volver a Rotación de Personal
+            </a>
+            <a href="/reports/monthly-rotation-indicators">
+                <i class="fas fa-calendar-alt me-1"></i>
+                Indicadores Mensuales
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <form id="filtersForm" method="GET">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">Año</label>
+                            <select name="year" class="year-selector" onchange="applyFilters()">
+                                <% for (let y = 2020; y <= 2030; y++) { %>
+                                    <option value="<%= y %>" <%= y == year ? 'selected' : '' %>><%= y %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">Empresa</label>
+                            <div class="multi-select">
+                                <div class="multi-select-button" onclick="toggleDropdown('company')">
+                                    <span id="company-text">Todas las empresas</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="multi-select-dropdown" id="company-dropdown">
+                                    <% filterOptions.companies.forEach(company => { %>
+                                        <div class="multi-select-option">
+                                            <label>
+                                                <input type="checkbox" name="companyCode" value="<%= company %>" 
+                                                       <%= filters.companyCode && filters.companyCode.includes(company) ? 'checked' : '' %>
+                                                       onchange="updateMultiSelectText('company')">
+                                                <%= company %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">Área de Personal</label>
+                            <div class="multi-select">
+                                <div class="multi-select-button" onclick="toggleDropdown('personnelArea')">
+                                    <span id="personnelArea-text">Todas las áreas</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="multi-select-dropdown" id="personnelArea-dropdown">
+                                    <% filterOptions.personnelAreas.forEach(area => { %>
+                                        <div class="multi-select-option">
+                                            <label>
+                                                <input type="checkbox" name="personnelArea" value="<%= area.code %>" 
+                                                       <%= filters.personnelArea && filters.personnelArea.includes(area.code) ? 'checked' : '' %>
+                                                       onchange="updateMultiSelectText('personnelArea')">
+                                                <%= area.code %> - <%= area.description %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">Centro de Costos</label>
+                            <div class="multi-select">
+                                <div class="multi-select-button" onclick="toggleDropdown('costCenter')">
+                                    <span id="costCenter-text">Todos los centros</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="multi-select-dropdown" id="costCenter-dropdown">
+                                    <% filterOptions.costCenters.forEach(center => { %>
+                                        <div class="multi-select-option">
+                                            <label>
+                                                <input type="checkbox" name="costCenter" value="<%= center.code %>" 
+                                                       <%= filters.costCenter && filters.costCenter.includes(center.code) ? 'checked' : '' %>
+                                                       onchange="updateMultiSelectText('costCenter')">
+                                                <%= center.code %> - <%= center.description %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">Cargo</label>
+                            <div class="multi-select">
+                                <div class="multi-select-button" onclick="toggleDropdown('job')">
+                                    <span id="job-text">Todos los cargos</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="multi-select-dropdown" id="job-dropdown">
+                                    <% filterOptions.jobs.forEach(job => { %>
+                                        <div class="multi-select-option">
+                                            <label>
+                                                <input type="checkbox" name="jobCode" value="<%= job.code %>" 
+                                                       <%= filters.jobCode && filters.jobCode.includes(job.code) ? 'checked' : '' %>
+                                                       onchange="updateMultiSelectText('job')">
+                                                <%= job.code %> - <%= job.description %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-group">
+                            <label class="filter-label">&nbsp;</label>
+                            <div>
+                                <button type="button" class="btn-apply-filters" onclick="applyFilters()">
+                                    <i class="fas fa-filter me-1"></i>
+                                    Aplicar
+                                </button>
+                                <button type="button" class="btn-clear-filters" onclick="clearFilters()">
+                                    <i class="fas fa-times me-1"></i>
+                                    Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de Indicadores -->
+        <div class="indicators-table">
+            <div class="table-header">
+                INDICADOR DE ROTACIÓN DE PERSONAL - <%= year %>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Indicador</th>
+                            <th style="width: 6.25%;">Enero</th>
+                            <th style="width: 6.25%;">Febrero</th>
+                            <th style="width: 6.25%;">Marzo</th>
+                            <th style="width: 6.25%;">Abril</th>
+                            <th style="width: 6.25%;">Mayo</th>
+                            <th style="width: 6.25%;">Junio</th>
+                            <th style="width: 6.25%;">Julio</th>
+                            <th style="width: 6.25%;">Agosto</th>
+                            <th style="width: 6.25%;">Septiembre</th>
+                            <th style="width: 6.25%;">Octubre</th>
+                            <th style="width: 6.25%;">Noviembre</th>
+                            <th style="width: 6.25%;">Diciembre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Retirados -->
+                        <tr class="indicator-row retired-row">
+                            <td><strong>RETIRADOS (EXCLUYENDO SENA - SP)</strong></td>
+                            <% for (let month = 1; month <= 12; month++) { %>
+                                <td>
+                                    <% if (indicators.monthlyData[month] && !indicators.monthlyData[month].error) { %>
+                                        <%= indicators.monthlyData[month].retiredWorkers.count %>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                            <% } %>
+                        </tr>
+                        
+                        <!-- Trabajadores al Inicio del Período -->
+                        <tr class="indicator-row workers-start-row">
+                            <td><strong>Trabajadores al Inicio del Período</strong></td>
+                            <% for (let month = 1; month <= 12; month++) { %>
+                                <td>
+                                    <% if (indicators.monthlyData[month] && !indicators.monthlyData[month].error) { %>
+                                        <%= indicators.monthlyData[month].workersAtPeriodStart.count %>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                            <% } %>
+                        </tr>
+                        
+                        <!-- Trabajadores al Final del Período -->
+                        <tr class="indicator-row workers-end-row">
+                            <td><strong>Trabajadores al Final del Período</strong></td>
+                            <% for (let month = 1; month <= 12; month++) { %>
+                                <td>
+                                    <% if (indicators.monthlyData[month] && !indicators.monthlyData[month].error) { %>
+                                        <%= indicators.monthlyData[month].workersAtPeriodEnd.count %>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                            <% } %>
+                        </tr>
+                        
+                        <!-- N° Total trabajadores al inicio y final del período -->
+                        <tr class="indicator-row average-row">
+                            <td><strong>N° Total trabajadores al inicio y final del período</strong></td>
+                            <% for (let month = 1; month <= 12; month++) { %>
+                                <td>
+                                    <% if (indicators.monthlyData[month] && !indicators.monthlyData[month].error) { %>
+                                        <%= Math.round(indicators.monthlyData[month].averageWorkers) %>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                            <% } %>
+                        </tr>
+                        
+                        <!-- % ROTACIÓN DE PERSONAL MENSUAL -->
+                        <tr class="indicator-row percentage-row">
+                            <td><strong>% ROTACIÓN DE PERSONAL MENSUAL</strong></td>
+                            <% for (let month = 1; month <= 12; month++) { %>
+                                <td>
+                                    <% if (indicators.monthlyData[month] && !indicators.monthlyData[month].error) { %>
+                                        <%= indicators.monthlyData[month].monthlyRotationPercentage.toFixed(2) %>%
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                            <% } %>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Resumen Anual</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total Retirados:</strong> <%= indicators.annualTotals.totalRetired %></p>
+                        <p><strong>Promedio de Trabajadores por Mes:</strong> <%= Math.round(indicators.annualTotals.averageWorkersPerMonth) %></p>
+                        <p><strong>% Rotación Anual:</strong> <%= indicators.annualTotals.annualRotationPercentage.toFixed(2) %>%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Información del Cálculo</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Fecha de Cálculo:</strong> <%= new Date(indicators.calculationDate).toLocaleString('es-ES') %></p>
+                        <p><strong>Año:</strong> <%= indicators.year %></p>
+                        <p><strong>Filtros Aplicados:</strong> 
+                            <% if (Object.keys(indicators.filters).length === 0) { %>
+                                Ninguno
+                            <% } else { %>
+                                <%= Object.keys(indicators.filters).length %> filtro(s)
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para manejar los filtros multi-select
+        function toggleDropdown(type) {
+            closeAllDropdowns();
+            const dropdown = document.getElementById(type + '-dropdown');
+            dropdown.classList.add('show');
+        }
+
+        function closeAllDropdowns() {
+            const dropdowns = document.querySelectorAll('.multi-select-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        function updateMultiSelectText(type) {
+            const checkboxes = document.querySelectorAll(`input[name="${getCheckboxName(type)}"]:checked`);
+            const textElement = document.getElementById(type + '-text');
+            
+            if (checkboxes.length === 0) {
+                textElement.textContent = getDefaultText(type);
+            } else if (checkboxes.length === 1) {
+                textElement.textContent = checkboxes[0].value;
+            } else {
+                textElement.textContent = `${checkboxes.length} seleccionados`;
+            }
+        }
+
+        function getCheckboxName(type) {
+            const mapping = {
+                'company': 'companyCode',
+                'personnelArea': 'personnelArea',
+                'costCenter': 'costCenter',
+                'job': 'jobCode'
+            };
+            return mapping[type] || type;
+        }
+
+        function getDefaultText(type) {
+            const mapping = {
+                'company': 'Todas las empresas',
+                'personnelArea': 'Todas las áreas',
+                'costCenter': 'Todos los centros',
+                'job': 'Todos los cargos'
+            };
+            return mapping[type] || 'Todos';
+        }
+
+        function getSelectedValues(type) {
+            const checkboxes = document.querySelectorAll(`input[name="${getCheckboxName(type)}"]:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function applyFilters() {
+            const form = document.getElementById('filtersForm');
+            const formData = new FormData(form);
+            
+            // Construir URL con parámetros
+            const params = new URLSearchParams();
+            
+            // Año
+            params.append('year', formData.get('year'));
+            
+            // Filtros multi-select
+            const companyValues = getSelectedValues('company');
+            if (companyValues.length > 0) {
+                params.append('companyCode', companyValues.join(','));
+            }
+            
+            const personnelAreaValues = getSelectedValues('personnelArea');
+            if (personnelAreaValues.length > 0) {
+                params.append('personnelArea', personnelAreaValues.join(','));
+            }
+            
+            const costCenterValues = getSelectedValues('costCenter');
+            if (costCenterValues.length > 0) {
+                params.append('costCenter', costCenterValues.join(','));
+            }
+            
+            const jobValues = getSelectedValues('job');
+            if (jobValues.length > 0) {
+                params.append('jobCode', jobValues.join(','));
+            }
+            
+            // Redirigir con los filtros
+            window.location.href = `/reports/annual-rotation-indicators?${params.toString()}`;
+        }
+
+        function clearFilters() {
+            // Limpiar todos los checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Actualizar textos
+            updateMultiSelectText('company');
+            updateMultiSelectText('personnelArea');
+            updateMultiSelectText('costCenter');
+            updateMultiSelectText('job');
+            
+            // Aplicar filtros (sin selecciones)
+            applyFilters();
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.multi-select')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Inicializar textos de los filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMultiSelectText('company');
+            updateMultiSelectText('personnelArea');
+            updateMultiSelectText('costCenter');
+            updateMultiSelectText('job');
+        });
+    </script>
+</body>
+</html>

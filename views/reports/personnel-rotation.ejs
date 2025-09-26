@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/sap-ui5.css" rel="stylesheet">
+    <style>
+        /* SAP UI5 Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .sap-menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.25rem;
+        }
+        
+        .sap-menu-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sap-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .sap-logo-icon {
+            font-size: 1.5rem;
+            color: #ffc107;
+        }
+        
+        .sap-side-nav {
+            position: fixed;
+            top: 3rem;
+            left: -300px;
+            width: 300px;
+            height: calc(100vh - 3rem);
+            background: white;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+        
+        .sap-side-nav.open {
+            left: 0;
+        }
+        
+        .sap-side-nav-content {
+            padding: 1rem 0;
+        }
+        
+        .sap-nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sap-nav-section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sap-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sap-nav-item {
+            margin: 0;
+        }
+        
+        .sap-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sap-nav-link:hover {
+            background-color: #f8f9fa;
+            color: #0070f3;
+            border-left-color: #0070f3;
+        }
+        
+        .sap-nav-link.active {
+            background-color: #e3f2fd;
+            color: #0070f3;
+            border-left-color: #0070f3;
+            font-weight: 500;
+        }
+        
+        .sap-nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .sap-nav-text {
+            font-size: 0.9rem;
+        }
+        
+        .sap-main-content {
+            margin-top: 3rem;
+            padding: 2rem;
+            min-height: calc(100vh - 3rem);
+        }
+        
+        .sap-page-header {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sap-page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sap-page-title i {
+            color: #0070f3;
+        }
+        
+        .sap-breadcrumb {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .sap-content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .sap-card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .sap-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Filtros Multi-Select */
+        .sap-filters-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sap-filters-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-compact-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .sap-filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .sap-filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sap-filter-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #616161;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sap-multi-select {
+            position: relative;
+        }
+        
+        .sap-multi-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            min-height: 2.25rem;
+        }
+        
+        .sap-multi-select-trigger:hover {
+            border-color: #0070f3;
+        }
+        
+        .sap-multi-select-trigger.open {
+            border-color: #0070f3;
+            box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+        }
+        
+        .sap-multi-select-text {
+            font-size: 0.875rem;
+            color: #424242;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .sap-multi-select-trigger i {
+            color: #616161;
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .sap-multi-select-trigger.open i {
+            transform: rotate(180deg);
+        }
+        
+        .sap-multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .sap-multi-select-dropdown.show {
+            display: block;
+        }
+        
+        .sap-multi-select-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .sap-multi-select-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .sap-multi-select-option .sap-checkbox {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #0070f3;
+            cursor: pointer;
+        }
+        
+        .sap-multi-select-option span {
+            font-size: 0.875rem;
+            color: #424242;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .sap-filter-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        
+        .sap-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-btn-primary {
+            background-color: #0070f3;
+            color: white;
+        }
+        
+        .sap-btn-primary:hover {
+            background-color: #0051d5;
+        }
+        
+        .sap-btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .sap-btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Tabla */
+        .sap-table-container {
+            overflow-x: auto;
+        }
+        
+        .sap-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .sap-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+        
+        .sap-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        
+        .sap-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .sap-table tbody tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+        
+        .sap-table tbody tr:nth-child(even):hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Estadísticas */
+        .sap-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sap-stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .sap-stat-icon.blue {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+        }
+        
+        .sap-stat-icon.green {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .sap-stat-icon.orange {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55100 100%);
+        }
+        
+        .sap-stat-icon.purple {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%);
+        }
+        
+        .sap-stat-content {
+            flex: 1;
+        }
+        
+        .sap-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.2;
+        }
+        
+        .sap-stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sap-main-content {
+                padding: 1rem;
+            }
+            
+            .sap-filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sap-stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sap-table-container {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Loading */
+        .sap-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .sap-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0070f3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty state */
+        .sap-empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+        }
+        
+        .sap-empty-icon {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+        
+        .sap-empty-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sap-empty-message {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div class="sap-logo">
+                <i class="fas fa-chart-line sap-logo-icon"></i>
+                <span>SAP Reports</span>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (user && user.picture) { %>
+                        <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                    <% } else { %>
+                        <img src="https://via.placeholder.com/32x32/0070f3/ffffff?text=<%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %>" 
+                             alt="Avatar" class="sap-user-avatar">
+                    <% } %>
+                    <span><%= user && user.name ? user.name : 'Usuario' %></span>
+                </div>
+                <button class="sap-logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Side Navigation -->
+    <nav class="sap-side-nav" id="sideNav">
+        <div class="sap-side-nav-content">
+            <div class="sap-nav-section">
+                <div class="sap-nav-section-title">Reportes de Nómina</div>
+                <ul class="sap-nav-list">
+                    <li class="sap-nav-item">
+                        <a href="/" class="sap-nav-link">
+                            <i class="fas fa-money-bill-wave sap-nav-icon"></i>
+                            <span class="sap-nav-text">Salarios Nómina</span>
+                        </a>
+                    </li>
+                    <li class="sap-nav-item">
+                        <a href="/summary/organizational-units" class="sap-nav-link">
+                            <i class="fas fa-building sap-nav-icon"></i>
+                            <span class="sap-nav-text">Resumen Organizacional</span>
+                        </a>
+                    </li>
+                    <li class="sap-nav-item">
+                        <a href="/search" class="sap-nav-link">
+                            <i class="fas fa-search sap-nav-icon"></i>
+                            <span class="sap-nav-text">Búsqueda Avanzada</span>
+                        </a>
+                    </li>
+                    <li class="sap-nav-item">
+                        <a href="/personnel-rotation" class="sap-nav-link active">
+                            <i class="fas fa-exchange-alt sap-nav-icon"></i>
+                            <span class="sap-nav-text">Rotación de Personal</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="sap-main-content">
+        <!-- Page Header -->
+        <div class="sap-page-header">
+            <h1 class="sap-page-title">
+                <i class="fas fa-exchange-alt"></i>
+                <%= breadcrumb %>
+            </h1>
+            <p class="sap-breadcrumb">Reporte de rotación de personal del período actual</p>
+            
+            <!-- Navigation Links -->
+            <div style="margin-top: 1rem;">
+                <a href="/reports/monthly-rotation-indicators" style="color: #0070f3; text-decoration: none; font-weight: 500;">
+                    <i class="fas fa-chart-bar"></i> Ver Indicadores Mensuales
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="sap-stats-grid">
+            <div class="sap-stat-card">
+                <div class="sap-stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="sap-stat-content">
+                    <div class="sap-stat-value"><%= totalRecords %></div>
+                    <div class="sap-stat-label">Total Registros</div>
+                </div>
+            </div>
+            <div class="sap-stat-card">
+                <div class="sap-stat-icon green">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="sap-stat-content">
+                    <div class="sap-stat-value" id="totalCompanies">-</div>
+                    <div class="sap-stat-label">Empresas</div>
+                </div>
+            </div>
+            <div class="sap-stat-card">
+                <div class="sap-stat-icon orange">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="sap-stat-content">
+                    <div class="sap-stat-value" id="totalAreas">-</div>
+                    <div class="sap-stat-label">Áreas</div>
+                </div>
+            </div>
+            <div class="sap-stat-card">
+                <div class="sap-stat-icon purple">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="sap-stat-content">
+                    <div class="sap-stat-value" id="totalJobs">-</div>
+                    <div class="sap-stat-label">Cargos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="sap-content-card">
+            <div class="sap-card-header">
+                <h2 class="sap-card-title">
+                    <i class="fas fa-filter"></i>
+                    Filtros de Búsqueda
+                </h2>
+            </div>
+            <div class="sap-card-body">
+                <div class="sap-compact-filters">
+                    <div class="sap-filter-row">
+                        <div class="sap-filter-item">
+                            <label class="sap-filter-label">Empresa</label>
+                            <div class="sap-multi-select" id="filterCompany">
+                                <div class="sap-multi-select-trigger" onclick="toggleDropdown('filterCompany')">
+                                    <span class="sap-multi-select-text">Seleccionar...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="sap-multi-select-dropdown" id="filterCompany-dropdown">
+                                    <% if (uniqueCompanies && uniqueCompanies.length > 0) { %>
+                                        <% uniqueCompanies.forEach(company => { %>
+                                            <label class="sap-multi-select-option">
+                                                <input type="checkbox" value="<%= company %>" class="sap-checkbox">
+                                                <span><%= company %></span>
+                                            </label>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sap-filter-item">
+                            <label class="sap-filter-label">Área Personal</label>
+                            <div class="sap-multi-select" id="filterPersonnelArea">
+                                <div class="sap-multi-select-trigger" onclick="toggleDropdown('filterPersonnelArea')">
+                                    <span class="sap-multi-select-text">Seleccionar...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="sap-multi-select-dropdown" id="filterPersonnelArea-dropdown">
+                                    <% if (uniquePersonnelAreas && uniquePersonnelAreas.length > 0) { %>
+                                        <% uniquePersonnelAreas.forEach(area => { %>
+                                            <label class="sap-multi-select-option">
+                                                <input type="checkbox" value="<%= area.code %>" class="sap-checkbox">
+                                                <span><%= area.code %> - <%= area.description %></span>
+                                            </label>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sap-filter-item">
+                            <label class="sap-filter-label">Centro Costo</label>
+                            <div class="sap-multi-select" id="filterCostCenter">
+                                <div class="sap-multi-select-trigger" onclick="toggleDropdown('filterCostCenter')">
+                                    <span class="sap-multi-select-text">Seleccionar...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="sap-multi-select-dropdown" id="filterCostCenter-dropdown">
+                                    <% if (uniqueCostCenters && uniqueCostCenters.length > 0) { %>
+                                        <% uniqueCostCenters.forEach(center => { %>
+                                            <label class="sap-multi-select-option">
+                                                <input type="checkbox" value="<%= center.code %>" class="sap-checkbox">
+                                                <span><%= center.code %> - <%= center.description %></span>
+                                            </label>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sap-filter-item">
+                            <label class="sap-filter-label">Cargo</label>
+                            <div class="sap-multi-select" id="filterJob">
+                                <div class="sap-multi-select-trigger" onclick="toggleDropdown('filterJob')">
+                                    <span class="sap-multi-select-text">Seleccionar...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="sap-multi-select-dropdown" id="filterJob-dropdown">
+                                    <% if (uniqueJobs && uniqueJobs.length > 0) { %>
+                                        <% uniqueJobs.forEach(job => { %>
+                                            <label class="sap-multi-select-option">
+                                                <input type="checkbox" value="<%= job.code %>" class="sap-checkbox">
+                                                <span><%= job.code %> - <%= job.description %></span>
+                                            </label>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sap-filter-actions">
+                        <button type="button" class="sap-btn sap-btn-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times"></i>
+                            Limpiar Filtros
+                        </button>
+                        <button type="button" class="sap-btn sap-btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-search"></i>
+                            Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="sap-content-card">
+            <div class="sap-card-header">
+                <h2 class="sap-card-title">
+                    <i class="fas fa-table"></i>
+                    Datos de Rotación de Personal
+                </h2>
+            </div>
+            <div class="sap-card-body">
+                <% if (rotationData && rotationData.length > 0) { %>
+                    <div class="sap-table-container">
+                        <table class="sap-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Empleado</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Área Personal</th>
+                                    <th>Centro Costos</th>
+                                    <th>Cargo</th>
+                                    <th>Descripción Cargo</th>
+                                    <th>Unidad Org.</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Horas Contrato</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% rotationData.forEach(function(record) { %>
+                                    <tr>
+                                        <td><%= record.employeeId %></td>
+                                        <td><%= record.employeeName %></td>
+                                        <td><%= record.companyCode %></td>
+                                        <td><%= record.personnelAreaCode %> - <%= record.personnelAreaDescr %></td>
+                                        <td><%= record.costCenterCode %> - <%= record.costCenterDescr %></td>
+                                        <td><%= record.jobCode %></td>
+                                        <td><%= record.jobDescription %></td>
+                                        <td><%= record.orgUnitCode %> - <%= record.orgUnitDescription %></td>
+                                        <td><%= record.contractStartDate ? new Date(record.contractStartDate).toLocaleDateString('es-ES') : 'N/A' %></td>
+                                        <td>
+                                            <% if (record.contractEndDate && 
+                                                  record.contractEndDate !== '/Date(253402214400000)/' &&
+                                                  record.contractEndDate !== '99991231' &&
+                                                  record.contractEndDate !== 99991231) { %>
+                                                <% 
+                                                    // Intentar parsear la fecha fin de contrato
+                                                    let endDate = null;
+                                                    if (typeof record.contractEndDate === 'string') {
+                                                        if (record.contractEndDate.includes('/Date(')) {
+                                                            const match = record.contractEndDate.match(/\/Date\((\d+)\)\//);
+                                                            if (match) {
+                                                                endDate = new Date(parseInt(match[1]));
+                                                            }
+                                                        } else if (/^\d{8}$/.test(record.contractEndDate)) {
+                                                            // Formato YYYYMMDD
+                                                            const year = parseInt(record.contractEndDate.substring(0, 4));
+                                                            const month = parseInt(record.contractEndDate.substring(4, 6)) - 1;
+                                                            const day = parseInt(record.contractEndDate.substring(6, 8));
+                                                            endDate = new Date(year, month, day);
+                                                        } else {
+                                                            endDate = new Date(record.contractEndDate);
+                                                        }
+                                                    } else if (typeof record.contractEndDate === 'number' && record.contractEndDate !== 99991231) {
+                                                        // Formato numérico YYYYMMDD
+                                                        const dateStr = record.contractEndDate.toString();
+                                                        if (dateStr.length === 8) {
+                                                            const year = parseInt(dateStr.substring(0, 4));
+                                                            const month = parseInt(dateStr.substring(4, 6)) - 1;
+                                                            const day = parseInt(dateStr.substring(6, 8));
+                                                            endDate = new Date(year, month, day);
+                                                        }
+                                                    } else if (record.contractEndDate instanceof Date) {
+                                                        endDate = record.contractEndDate;
+                                                    }
+                                                %>
+                                                <%= endDate && !isNaN(endDate.getTime()) ? endDate.toLocaleDateString('es-ES') : 'N/A' %>
+                                            <% } else { %>
+                                                <span style="color: #28a745; font-weight: 500;">Activo</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= record.contractedHours %></td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="sap-empty-state">
+                        <div class="sap-empty-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h3 class="sap-empty-title">No se encontraron datos</h3>
+                        <p class="sap-empty-message">
+                            No hay registros de rotación de personal que coincidan con los filtros aplicados.
+                        </p>
+                        <button class="sap-btn sap-btn-primary" onclick="clearFilters()">
+                            <i class="fas fa-refresh"></i>
+                            Limpiar Filtros
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Datos para JavaScript
+        const rotationData = <%- JSON.stringify(rotationData || []) %>;
+        
+        // Calcular estadísticas
+        function calculateStats() {
+            const companies = new Set(rotationData.map(r => r.companyCode)).size;
+            const areas = new Set(rotationData.map(r => r.personnelAreaCode)).size;
+            const jobs = new Set(rotationData.map(r => r.jobCode)).size;
+            
+            document.getElementById('totalCompanies').textContent = companies;
+            document.getElementById('totalAreas').textContent = areas;
+            document.getElementById('totalJobs').textContent = jobs;
+        }
+        
+        // Funciones para multi-select
+        function toggleDropdown(filterId) {
+            const dropdown = document.getElementById(filterId + '-dropdown');
+            const trigger = document.querySelector(`#${filterId} .sap-multi-select-trigger`);
+            
+            // Cerrar otros dropdowns
+            closeAllDropdowns();
+            
+            // Toggle el dropdown actual
+            dropdown.classList.toggle('show');
+            trigger.classList.toggle('open');
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.sap-multi-select-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+            document.querySelectorAll('.sap-multi-select-trigger').forEach(trigger => {
+                trigger.classList.remove('open');
+            });
+        }
+
+        function updateMultiSelectText(filterId) {
+            const checkboxes = document.querySelectorAll(`#${filterId}-dropdown .sap-checkbox:checked`);
+            const textElement = document.querySelector(`#${filterId} .sap-multi-select-text`);
+            
+            if (checkboxes.length === 0) {
+                textElement.textContent = 'Seleccionar...';
+            } else if (checkboxes.length === 1) {
+                textElement.textContent = checkboxes[0].nextElementSibling.textContent;
+            } else {
+                textElement.textContent = `${checkboxes.length} elementos seleccionados`;
+            }
+        }
+
+        function getSelectedValues(filterId) {
+            const checkboxes = document.querySelectorAll(`#${filterId} .sap-checkbox:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function applyFilters() {
+            const selectedCompanies = getSelectedValues('filterCompany');
+            const selectedPersonnelAreas = getSelectedValues('filterPersonnelArea');
+            const selectedCostCenters = getSelectedValues('filterCostCenter');
+            const selectedJobs = getSelectedValues('filterJob');
+
+            // Construir URL con parámetros
+            const params = new URLSearchParams();
+            
+            if (selectedCompanies.length > 0) {
+                params.append('companyCode', selectedCompanies.join(','));
+            }
+            if (selectedPersonnelAreas.length > 0) {
+                params.append('personnelArea', selectedPersonnelAreas.join(','));
+            }
+            if (selectedCostCenters.length > 0) {
+                params.append('costCenter', selectedCostCenters.join(','));
+            }
+            if (selectedJobs.length > 0) {
+                params.append('jobCode', selectedJobs.join(','));
+            }
+
+            const url = '/reports/personnel-rotation' + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = url;
+        }
+        
+        // Limpiar filtros
+        function clearFilters() {
+            document.querySelectorAll('.sap-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.querySelectorAll('.sap-multi-select-text').forEach(text => {
+                text.textContent = 'Seleccionar...';
+            });
+            window.location.href = '/reports/personnel-rotation';
+        }
+        
+        // Confirmar logout
+        function confirmLogout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = '/logout';
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateStats();
+            
+            // Event listeners para checkboxes
+            document.querySelectorAll('.sap-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateMultiSelectText(this.closest('.sap-multi-select').id);
+                });
+            });
+            
+            // Cerrar dropdowns al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.sap-multi-select')) {
+                    closeAllDropdowns();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

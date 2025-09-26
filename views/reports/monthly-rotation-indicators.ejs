@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - SAP Reports</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/sap-ui5.css" rel="stylesheet">
+    <style>
+        /* SAP UI5 Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sap-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051d5 100%);
+            color: white;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sap-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .sap-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sap-user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sap-logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sap-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .sap-menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.25rem;
+        }
+        
+        .sap-menu-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sap-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .sap-logo-icon {
+            font-size: 1.5rem;
+            color: #ffc107;
+        }
+        
+        .sap-main-content {
+            margin-top: 3rem;
+            padding: 2rem;
+            min-height: calc(100vh - 3rem);
+        }
+        
+        .sap-page-header {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sap-page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sap-page-title i {
+            color: #0070f3;
+        }
+        
+        .sap-breadcrumb {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .sap-content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sap-card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .sap-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sap-card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Indicadores Principales */
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .indicator-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #0070f3;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .indicator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .indicator-card.retired {
+            border-left-color: #dc3545;
+        }
+        
+        .indicator-card.start-period {
+            border-left-color: #28a745;
+        }
+        
+        .indicator-card.end-period {
+            border-left-color: #17a2b8;
+        }
+        
+        .indicator-card.average {
+            border-left-color: #ffc107;
+        }
+        
+        .indicator-card.percentage {
+            border-left-color: #6f42c1;
+        }
+        
+        .indicator-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .indicator-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .indicator-icon.retired {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .indicator-icon.start-period {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .indicator-icon.end-period {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+        
+        .indicator-icon.average {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        }
+        
+        .indicator-icon.percentage {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+        }
+        
+        .indicator-info h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6c757d;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .indicator-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .indicator-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Detalles */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* Controles de período */
+        .period-controls {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .period-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .period-control label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        .period-control select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        
+        .period-control button {
+            padding: 0.5rem 1rem;
+            background: #0070f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .period-control button:hover {
+            background: #0051d5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sap-main-content {
+                padding: 1rem;
+            }
+            
+            .indicators-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .indicator-card {
+                padding: 1.5rem;
+            }
+            
+            .indicator-value {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sap-header">
+        <div class="sap-header-container">
+            <div class="sap-logo">
+                <i class="fas fa-chart-line sap-logo-icon"></i>
+                <span>SAP Reports</span>
+            </div>
+            
+            <div class="sap-user-info">
+                <div class="sap-user-details">
+                    <% if (user && user.picture) { %>
+                        <img src="<%= user.picture %>" alt="Avatar" class="sap-user-avatar">
+                    <% } else { %>
+                        <img src="https://via.placeholder.com/32x32/0070f3/ffffff?text=<%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %>" 
+                             alt="Avatar" class="sap-user-avatar">
+                    <% } %>
+                    <span><%= user && user.name ? user.name : 'Usuario' %></span>
+                </div>
+                <button class="sap-logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="sap-main-content">
+        <!-- Page Header -->
+        <div class="sap-page-header">
+            <h1 class="sap-page-title">
+                <i class="fas fa-chart-bar"></i>
+                <%= breadcrumb %>
+            </h1>
+            <p class="sap-breadcrumb">Indicadores de rotación de personal para el período seleccionado</p>
+            
+            <!-- Navigation Links -->
+            <div style="margin-top: 1rem;">
+                <a href="/reports/personnel-rotation" style="color: #0070f3; text-decoration: none; margin-right: 1rem;">
+                    <i class="fas fa-arrow-left"></i> Volver a Rotación de Personal
+                </a>
+                <a href="/reports/annual-rotation-indicators" style="color: #0070f3; text-decoration: none; margin-right: 1rem;">
+                    <i class="fas fa-chart-line"></i> Indicadores Anuales
+                </a>
+                <a href="/reports/monthly-rotation-indicators" style="color: #0070f3; text-decoration: none;">
+                    <i class="fas fa-sync-alt"></i> Actualizar Indicadores
+                </a>
+            </div>
+        </div>
+
+        <!-- Period Controls -->
+        <div class="period-controls">
+            <div class="period-control">
+                <label for="yearSelect">Año:</label>
+                <select id="yearSelect">
+                    <% for (let y = 2020; y <= 2030; y++) { %>
+                        <option value="<%= y %>" <%= y === year ? 'selected' : '' %>><%= y %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="period-control">
+                <label for="monthSelect">Mes:</label>
+                <select id="monthSelect">
+                    <option value="1" <%= month === 1 ? 'selected' : '' %>>Enero</option>
+                    <option value="2" <%= month === 2 ? 'selected' : '' %>>Febrero</option>
+                    <option value="3" <%= month === 3 ? 'selected' : '' %>>Marzo</option>
+                    <option value="4" <%= month === 4 ? 'selected' : '' %>>Abril</option>
+                    <option value="5" <%= month === 5 ? 'selected' : '' %>>Mayo</option>
+                    <option value="6" <%= month === 6 ? 'selected' : '' %>>Junio</option>
+                    <option value="7" <%= month === 7 ? 'selected' : '' %>>Julio</option>
+                    <option value="8" <%= month === 8 ? 'selected' : '' %>>Agosto</option>
+                    <option value="9" <%= month === 9 ? 'selected' : '' %>>Septiembre</option>
+                    <option value="10" <%= month === 10 ? 'selected' : '' %>>Octubre</option>
+                    <option value="11" <%= month === 11 ? 'selected' : '' %>>Noviembre</option>
+                    <option value="12" <%= month === 12 ? 'selected' : '' %>>Diciembre</option>
+                </select>
+            </div>
+            <div class="period-control">
+                <button onclick="updatePeriod()">
+                    <i class="fas fa-search"></i> Consultar
+                </button>
+            </div>
+        </div>
+
+        <!-- Información del Período -->
+        <div class="alert alert-info">
+            <strong>Período de Análisis:</strong> <%= indicators.monthName %> <%= indicators.year %><br>
+            <strong>Fechas de Cálculo:</strong>
+            <ul style="margin: 0.5rem 0 0 1rem; padding: 0;">
+                <li>Trabajadores retirados: <%= indicators.calculationDates.startRetirementDate %> a <%= indicators.calculationDates.endRetirementDate %></li>
+                <li>Inicio del período: <%= indicators.calculationDates.previousMonthEnd %></li>
+                <li>Final del período: <%= indicators.calculationDates.currentMonthEnd %></li>
+            </ul>
+        </div>
+
+        <!-- Indicadores Principales -->
+        <div class="indicators-grid">
+            <!-- Trabajadores Retirados -->
+            <div class="indicator-card retired">
+                <div class="indicator-header">
+                    <div class="indicator-icon retired">
+                        <i class="fas fa-user-minus"></i>
+                    </div>
+                    <div class="indicator-info">
+                        <h3>Trabajadores Retirados</h3>
+                        <div class="indicator-value"><%= indicators.retiredWorkers.count %></div>
+                        <div class="indicator-description">
+                            Empleados que finalizaron contrato entre el <%= indicators.calculationDates.startRetirementDate %> y <%= indicators.calculationDates.endRetirementDate %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trabajadores al Inicio -->
+            <div class="indicator-card start-period">
+                <div class="indicator-header">
+                    <div class="indicator-icon start-period">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="indicator-info">
+                        <h3>Inicio del Período</h3>
+                        <div class="indicator-value"><%= indicators.workersAtPeriodStart.count %></div>
+                        <div class="indicator-description">
+                            Trabajadores activos al final del mes anterior (<%= indicators.calculationDates.previousMonthEnd %>)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trabajadores al Final -->
+            <div class="indicator-card end-period">
+                <div class="indicator-header">
+                    <div class="indicator-icon end-period">
+                        <i class="fas fa-stop"></i>
+                    </div>
+                    <div class="indicator-info">
+                        <h3>Final del Período</h3>
+                        <div class="indicator-value"><%= indicators.workersAtPeriodEnd.count %></div>
+                        <div class="indicator-description">
+                            Trabajadores activos al final del mes (<%= indicators.workersAtPeriodEnd.active %>) + egresos del último día (<%= indicators.workersAtPeriodEnd.lastDayExits %>)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promedio -->
+            <div class="indicator-card average">
+                <div class="indicator-header">
+                    <div class="indicator-icon average">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="indicator-info">
+                        <h3>Promedio de Trabajadores</h3>
+                        <div class="indicator-value"><%= indicators.averageWorkers %></div>
+                        <div class="indicator-description">
+                            Promedio entre trabajadores al inicio y final del período
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Porcentaje de Rotación -->
+            <div class="indicator-card percentage">
+                <div class="indicator-header">
+                    <div class="indicator-icon percentage">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="indicator-info">
+                        <h3>% Rotación Mensual</h3>
+                        <div class="indicator-value"><%= indicators.monthlyRotationPercentage %>%</div>
+                        <div class="indicator-description">
+                            Porcentaje de rotación calculado como: (Retirados / Trabajadores Inicio) × 100
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalles del Cálculo -->
+        <div class="details-grid">
+            <div class="sap-content-card">
+                <div class="sap-card-header">
+                    <h2 class="sap-card-title">
+                        <i class="fas fa-calculator"></i>
+                        Detalles del Cálculo
+                    </h2>
+                </div>
+                <div class="sap-card-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Mes de análisis:</span>
+                        <span class="detail-value"><%= indicators.monthName %> <%= indicators.year %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Trabajadores al inicio:</span>
+                        <span class="detail-value"><%= indicators.workersAtPeriodStart.count %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Trabajadores retirados:</span>
+                        <span class="detail-value"><%= indicators.retiredWorkers.count %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Trabajadores al final:</span>
+                        <span class="detail-value"><%= indicators.workersAtPeriodEnd.count %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Promedio del período:</span>
+                        <span class="detail-value"><%= indicators.averageWorkers %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Tasa de rotación:</span>
+                        <span class="detail-value"><%= indicators.monthlyRotationPercentage %>%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sap-content-card">
+                <div class="sap-card-header">
+                    <h2 class="sap-card-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información Adicional
+                    </h2>
+                </div>
+                <div class="sap-card-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Activos al final del mes:</span>
+                        <span class="detail-value"><%= indicators.workersAtPeriodEnd.active %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Egresos del último día:</span>
+                        <span class="detail-value"><%= indicators.workersAtPeriodEnd.lastDayExits %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Fecha inicio retiros:</span>
+                        <span class="detail-value"><%= indicators.calculationDates.startRetirementDate %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Fecha fin retiros:</span>
+                        <span class="detail-value"><%= indicators.calculationDates.endRetirementDate %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Final mes anterior:</span>
+                        <span class="detail-value"><%= indicators.calculationDates.previousMonthEnd %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Final mes actual:</span>
+                        <span class="detail-value"><%= indicators.calculationDates.currentMonthEnd %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fórmulas de Cálculo -->
+        <div class="sap-content-card">
+            <div class="sap-card-header">
+                <h2 class="sap-card-title">
+                    <i class="fas fa-formula"></i>
+                    Fórmulas de Cálculo
+                </h2>
+            </div>
+            <div class="sap-card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h4 style="color: #dc3545; margin-bottom: 0.5rem;">Trabajadores Retirados</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
+                            Empleados con fecha fin de contrato entre el 02 del mes actual y el 01 del mes siguiente.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #28a745; margin-bottom: 0.5rem;">Trabajadores al Inicio del Período</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
+                            Empleados activos al último día del mes anterior (considerando fechas de inicio y fin de contrato).
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #17a2b8; margin-bottom: 0.5rem;">Trabajadores al Final del Período</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
+                            Empleados activos al último día del mes actual + egresos del último día del mes.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #ffc107; margin-bottom: 0.5rem;">Promedio de Trabajadores</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
+                            <strong>Fórmula:</strong> (Trabajadores Inicio + Trabajadores Final) ÷ 2
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #6f42c1; margin-bottom: 0.5rem;">% Rotación Mensual</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
+                            <strong>Fórmula:</strong> (Trabajadores Retirados ÷ Trabajadores Inicio) × 100
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Función para actualizar período
+        function updatePeriod() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            
+            window.location.href = `/reports/monthly-rotation-indicators?year=${year}&month=${month}`;
+        }
+        
+        // Confirmar logout
+        function confirmLogout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = '/logout';
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Indicadores de rotación cargados para <%= indicators.monthName %> <%= indicators.year %>');
+        });
+    </script>
+</body>
+</html>
